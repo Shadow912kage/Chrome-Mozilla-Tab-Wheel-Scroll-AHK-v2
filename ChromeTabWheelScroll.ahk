@@ -6,6 +6,8 @@
 ;; Based on a script made by someone(Xsoft?) on the internet
 ;; Translate to AHK2.0 and modify, Add some hotkeys, Shadow912kage@gmail.com
 
+;;; My indentation coding style is two spaces.
+
 ; AutoHotKey 2.0 configuration
 #Requires AutoHotkey v2.0
 #Warn ; Enable warnings to assist with detecting common errors.
