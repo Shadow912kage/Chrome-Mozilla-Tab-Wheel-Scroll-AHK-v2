@@ -18,7 +18,7 @@ A_MaxHotkeysPerInterval := 1000 ; Avoids warning messages for high speed wheel u
 SendMode "Input" ; Recommended for new scripts due to its superior speed and reliability.
 
 TraySetIcon "mouse.png" ; Icon source from https://icooon-mono.com/
-A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.3.0"
+A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.0"
 ;; Why can't I display the character '&'... NEED twice '&' escape
 ;;; [v2.0.2] can't display the character '&' on the 'A_IconTip' - AutoHotkey Community
 ;;;  https://www.autohotkey.com/boards/viewtopic.php?f=86&t=116067
@@ -151,17 +151,96 @@ GroupAdd "TargetApp", "ahk_class MozillaWindowClass" ; Mozilla Firefox and Thund
 ; Hotkeys
 #HotIf WinActive("ahk_group TargetApp")
 ; This script configuration
-WTBH := 45 ; Window Tab Bar's Height, ad hoc value...
 DCIT := 500 ; Double Click Interval Time[msec]
+
+GetChromeVer(id)
+{
+	PrcName := WinGetProcessName(id) 
+	PrcPath := WinGetProcessPath(id)
+	PrcRoot := RegExReplace(PrcPath, PrcName "$", "")
+	Loop Files, PrcRoot "*", "D"
+	{
+		If RegExMatch(A_LoopFileName, "\d+(\.\d+)*", &match)
+			Return match[0]
+	}
+	Return ""
+}
+GetMozillaVer(id)
+{
+	PrcName := WinGetProcessName(id) 
+	PrcPath := WinGetProcessPath(id)
+	AppPath := RegExReplace(PrcPath, PrcName "$", "application.ini")
+	Return IniRead(AppPath, "App", "Version", "")
+}
+GetTabbarRange(id)
+{ ; NOTICE! Doesn't distinguish between window and fullscreen mode.
+	ChrmProc := "chrome.exe"
+	ChrmMapKey := "Chrome"
+	ChrmTabRange := Object()
+	ChrmTabRange.Top := 0
+	ChrmTabRange.Btm := 45
+	EdgeProc := "msedge.exe"
+	EdgeMapKey := "MSEdge"
+	EdgeTabRange := Object()
+	EdgeTabRange.Top := 0
+	EdgeTabRange.Btm := 40
+	FxProc := "firefox.exe"
+	FxMapKey := "Fx"
+	FxTabRange := Object()
+	FxTabRange.Top := 0
+	FxTabRange.Btm := 48
+	TBProc := "thunderbird.exe"
+	TB102MapKey := "TB102" ; Before Supernova
+	TB102TabRange := Object()
+	TB102TabRange.Top := 0
+	TB102TabRange.Btm := 48
+	TB115MapKey := "TB115" ; After Supernova
+	TB115TabRange := Object()
+	TB115TabRange.Top := 47
+	TB115TabRange.Btm := 72
+	TabRange :=
+		Map(ChrmMapKey, ChrmTabRange, EdgeMapKey, EdgeTabRange, FxMapKey, FxTabRange, TB102MapKey, TB102TabRange, TB115MapKey, TB115TabRange)
+
+	PrcName := WinGetProcessName(id) 
+	Version := ""
+	MapKey := ""
+	Switch(PrcName)
+	{
+		Case ChrmProc:
+			Version := GetChromeVer(id)
+			MapKey := ChrmMapKey
+		Case EdgeProc:
+			Version := GetChromeVer(id)
+			MapKey := EdgeMapKey
+		Case FxProc:
+			Version := GetMozillaVer(id)
+			MapKey := FxMapKey
+		Case TBProc:
+			Version := GetMozillaVer(id)
+			TB115 := ">=115.0"
+			If VerCompare(Version, TB115)
+				MapKey := TB115MapKey
+			Else
+				MapKey := TB102MapKey
+	}
+	If MapKey
+		Return TabRange[MapKey]
+	Return ""
+}
+OnTabbar(ypos, id)
+{
+	TabbarRange := GetTabbarRange(id)
+	If (TabbarRange.Top <= ypos) && (ypos <= TabbarRange.Btm)
+		Return True
+	Return False
+}
 
 ;; Tab wheel scroll on the tab bar
 WheelUp::
 WheelDown::
 {
-  global WTBH
-
   MouseGetPos , &ypos, &id
-  If ypos < WTBH
+  If OnTabbar(ypos, id)
   {
     If A_ThisHotkey = "WheelUp"
       Send "^{PgUp}"
@@ -183,8 +262,8 @@ WheelDown::
 {
   global WTBH
 
-  MouseGetPos , &ypos
-  If ypos >= WTBH
+  MouseGetPos , &ypos, &id
+  If OnTabbar(ypos, id)
   {
 	If A_ThisHotkey = "~RButton & WheelUp"
 	  Send "^{PgUp}"
@@ -199,8 +278,8 @@ WheelDown::
 {
   global WTBH, DCIT
 
-  MouseGetPos , &ypos
-  If ypos >= WTBH
+  MouseGetPos , &ypos, &id
+  If OnTabbar(ypos, id)
   {
     If (A_PriorHotkey != "~RButton" or A_TimeSincePriorHotkey > DCIT)
 	{
@@ -220,8 +299,8 @@ WheelDown::
 {
   global WTBH
 
-  MouseGetPos , &ypos
-  If ypos >= WTBH
+  MouseGetPos , &ypos, &id
+  If OnTabbar(ypos, id)
   {
 	If A_ThisHotkey = "~LButton & WheelUp"
 	  Send "{WheelLeft}"
