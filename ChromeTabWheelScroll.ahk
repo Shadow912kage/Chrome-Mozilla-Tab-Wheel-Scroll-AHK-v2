@@ -18,7 +18,7 @@ A_MaxHotkeysPerInterval := 1000 ; Avoids warning messages for high speed wheel u
 SendMode "Input" ; Recommended for new scripts due to its superior speed and reliability.
 
 TraySetIcon "mouse.png" ; Icon source from https://icooon-mono.com/
-A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.0"
+A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.1"
 ;; Why can't I display the character '&'... NEED twice '&' escape
 ;;; [v2.0.2] can't display the character '&' on the 'A_IconTip' - AutoHotkey Community
 ;;;  https://www.autohotkey.com/boards/viewtopic.php?f=86&t=116067
