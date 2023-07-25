@@ -196,7 +196,7 @@ GetTabbarRange(id)
 	TB102TabRange.Btm := 48
 	TB115MapKey := "TB115" ; After Supernova
 	TB115TabRange := Object()
-	TB115TabRange.Top := 47
+	TB115TabRange.Top := 42
 	TB115TabRange.Btm := 72
 	TabRange :=
 		Map(ChrmMapKey, ChrmTabRange, EdgeMapKey, EdgeTabRange, FxMapKey, FxTabRange, TB102MapKey, TB102TabRange, TB115MapKey, TB115TabRange)
