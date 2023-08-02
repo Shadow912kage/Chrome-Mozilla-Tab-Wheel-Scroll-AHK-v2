@@ -18,7 +18,7 @@ A_MaxHotkeysPerInterval := 1000 ; Avoids warning messages for high speed wheel u
 SendMode "Input" ; Recommended for new scripts due to its superior speed and reliability.
 
 TraySetIcon "mouse.png" ; Icon source from https://icooon-mono.com/
-A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.1"
+A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.2"
 ;; Why can't I display the character '&'... NEED twice '&' escape
 ;;; [v2.0.2] can't display the character '&' on the 'A_IconTip' - AutoHotkey Community
 ;;;  https://www.autohotkey.com/boards/viewtopic.php?f=86&t=116067
@@ -196,8 +196,8 @@ GetTabbarRange(id)
 	TB102TabRange.Btm := 48
 	TB115MapKey := "TB115" ; After Supernova
 	TB115TabRange := Object()
-	TB115TabRange.Top := 42
-	TB115TabRange.Btm := 72
+	TB115TabRange.Top := 39
+	TB115TabRange.Btm := 69
 	TabRange :=
 		Map(ChrmMapKey, ChrmTabRange, EdgeMapKey, EdgeTabRange, FxMapKey, FxTabRange, TB102MapKey, TB102TabRange, TB115MapKey, TB115TabRange)
 
@@ -229,7 +229,8 @@ GetTabbarRange(id)
 }
 OnTabbar(ypos, id)
 {
-	TabbarRange := GetTabbarRange(id)
+	If !(TabbarRange := GetTabbarRange(id))
+		Return False
 	If (TabbarRange.Top <= ypos) && (ypos <= TabbarRange.Btm)
 		Return True
 	Return False
@@ -315,7 +316,7 @@ WheelDown::
 CBWT := 0.5 ; Clipboard Waiting Time[sec]
 SSQU := "https://www.google.com/search?q=" ; Search Site Query URL
 TSQU := "https://translate.google.com/?text=" ; Translate Site Query URL
-TSQO := "&sl=en&tl=ja&op=translate" ; Translate Site Query Option
+TSQO := "&sl=auto&tl=ja&op=translate" ; Translate Site Query Option
 PSQO := "&tbm=isch" ; Picture Search Query Option
 
 ClipSaved := ""
