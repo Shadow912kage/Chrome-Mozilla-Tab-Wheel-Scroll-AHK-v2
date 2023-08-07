@@ -18,7 +18,7 @@ A_MaxHotkeysPerInterval := 1000 ; Avoids warning messages for high speed wheel u
 SendMode "Input" ; Recommended for new scripts due to its superior speed and reliability.
 
 TraySetIcon "mouse.png" ; Icon source from https://icooon-mono.com/
-A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.2"
+A_IconTip := "Mousewheel tab scroll for Chrome &&& Mozilla v2.4.3"
 ;; Why can't I display the character '&'... NEED twice '&' escape
 ;;; [v2.0.2] can't display the character '&' on the 'A_IconTip' - AutoHotkey Community
 ;;;  https://www.autohotkey.com/boards/viewtopic.php?f=86&t=116067
@@ -235,6 +235,14 @@ OnTabbar(ypos, id)
 		Return True
 	Return False
 }
+OnTabpage(ypos, id)
+{
+	If !(TabbarRange := GetTabbarRange(id))
+		Return False
+	If TabbarRange.Btm < ypos
+		Return True
+	Return False
+}
 
 ;; Tab wheel scroll on the tab bar
 WheelUp::
@@ -264,7 +272,7 @@ WheelDown::
   global WTBH
 
   MouseGetPos , &ypos, &id
-  If OnTabbar(ypos, id)
+  If OnTabpage(ypos, id)
   {
 	If A_ThisHotkey = "~RButton & WheelUp"
 	  Send "^{PgUp}"
@@ -280,7 +288,7 @@ WheelDown::
   global WTBH, DCIT
 
   MouseGetPos , &ypos, &id
-  If OnTabbar(ypos, id)
+  If OnTabpage(ypos, id)
   {
     If (A_PriorHotkey != "~RButton" or A_TimeSincePriorHotkey > DCIT)
 	{
@@ -301,7 +309,7 @@ WheelDown::
   global WTBH
 
   MouseGetPos , &ypos, &id
-  If OnTabbar(ypos, id)
+  If OnTabpage(ypos, id)
   {
 	If A_ThisHotkey = "~LButton & WheelUp"
 	  Send "{WheelLeft}"
